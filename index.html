@@ -16,10 +16,10 @@
             <button class="login-btn" id="mobile-login-btn">Login</button>
         </div>
         <div class="mobile-nav-links">
-            <a href="#">Home</a>
-            <a href="#">How to use</a>
-            <a href="#">💕 Message me</a>
-            <a href="#">Contact</a>
+            <a href="#">🏠Home</a>
+            <a href="#">❓🤔 How</a>
+            <a href="#">💕Text-me</a>
+            <a href="#">📞Call-me</a>
             <a href="#" id="logout-btn">Logout</a>
         </div>
         <div class="theme-toggle">
@@ -79,17 +79,20 @@
                                 // Hide login button
                                 loginButton.style.display = 'none';
 
-                                // Create user profile picture element
-                                const userProfilePicElement = document.createElement('img');
-                                userProfilePicElement.src = userProfilePic;
-                                userProfilePicElement.alt = 'User Profile Picture';
-                                userProfilePicElement.style.width = '40px';
-                                userProfilePicElement.style.height = '40px';
-                                userProfilePicElement.style.borderRadius = '50%';
-                                userProfilePicElement.classList.add('user-profile-pic');
+                                // Check if user profile picture already exists
+                                if (!document.querySelector('.user-profile-pic')) {
+                                    // Create user profile picture element
+                                    const userProfilePicElement = document.createElement('img');
+                                    userProfilePicElement.src = userProfilePic;
+                                    userProfilePicElement.alt = 'User Profile Picture';
+                                    userProfilePicElement.style.width = '40px';
+                                    userProfilePicElement.style.height = '40px';
+                                    userProfilePicElement.style.borderRadius = '50%';
+                                    userProfilePicElement.classList.add('user-profile-pic');
 
-                                // Insert user profile picture in place of login button
-                                loginButton.parentNode.insertBefore(userProfilePicElement, loginButton.nextSibling);
+                                    // Insert user profile picture in place of login button
+                                    loginButton.parentNode.insertBefore(userProfilePicElement, loginButton.nextSibling);
+                                }
 
                                 // Save user data to Firestore
                                 await setDoc(doc(db, "users", user.uid), {

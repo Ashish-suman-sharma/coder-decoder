@@ -156,10 +156,11 @@ button:focus {
     width: 100%;
     text-align: center;
     transition: background-color 0.3s;
+    border-bottom: 1px solid #575757; /* Add this line */
 }
 
-.mobile-nav-links a:hover {
-    background-color: #575757;
+.mobile-nav-links a:last-child {
+    border-bottom: none; /* Remove the border from the last link */
 }
 
 .theme-toggle {
