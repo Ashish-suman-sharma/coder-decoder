@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Web Application</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="navbar-wrapper">
+            <div class="navbar">
+                <div class="logo">Logo</div>
+                <ul class="nav-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">How to use</a></li>
+                    <li><a href="#">💕 Message me</a></li>
+                    <li><a href="#" id="desktop-login-btn">Login</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="mobile-navbar-wrapper">
+            <i class="fas fa-bars hamburger"></i>
+            <button class="login-btn" id="mobile-login-btn">Login</button>
+        </div>
+        <div class="mobile-nav-links">
+            <a href="#">Home</a>
+            <a href="#">How to use</a>
+            <a href="#">💕 Message me</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="theme-toggle">
+            <button id="theme-toggle-btn">🌙</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="content">
+            <div class="input-container">
+                <input type="text" id="inputField" placeholder="Enter text here">
+            </div>
+            <button id="decodeButton">Decode</button>
+            <div class="output-container">
+                <p id="outputField">Output will appear here</p>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCI8p2DsS04iZbgire7zOx5Y3eMEm6cemI",
+            authDomain: "coder-decoder-62d25.firebaseapp.com",
+            projectId: "coder-decoder-62d25",
+            storageBucket: "coder-decoder-62d25.appspot.com",
+            messagingSenderId: "84778724309",
+            appId: "1:84778724309:web:ab1d6cb4e502536fd56b5c",
+            measurementId: "G-GB00VBJEYX"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // Set persistence to local
+        setPersistence(auth, browserLocalPersistence)
+            .then(() => {
+                console.log('Persistence set to local');
+                // Google Sign-In
+                const loginButtons = document.querySelectorAll('#desktop-login-btn, #mobile-login-btn');
+                loginButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        console.log('Login button clicked');
+                        signInWithPopup(auth, provider)
+                            .then((result) => {
+                                // This gives you a Google Access Token. You can use it to access the Google API.
+                                const credential = GoogleAuthProvider.credentialFromResult(result);
+                                const token = credential.accessToken;
+                                // The signed-in user info.
+                                const user = result.user;
+                                console.log('User signed in: ', user);
+
+                                // Change header color to green on successful login
+                                document.querySelector('header').style.backgroundColor = 'green';
+                            })
+                            .catch((error) => {
+                                // Handle Errors here.
+                                const errorCode = error.code;
+                                const errorMessage = error.message;
+                                // The email of the user's account used.
+                                const email = error.customData.email;
+                                // The AuthCredential type that was used.
+                                const credential = GoogleAuthProvider.credentialFromError(error);
+                                console.error('Error during sign-in: ', error);
+                            });
+                    });
+                });
+            })
+            .catch((error) => {
+                console.error('Error setting persistence: ', error);
+            });
+
+        // Theme toggle
+        document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            document.body.classList.toggle('light-theme');
+            const currentTheme = document.body.classList.contains('dark-theme') ? '🌙' : '🌞';
+            document.getElementById('theme-toggle-btn').textContent = currentTheme;
+        });
+
+        // Set default theme
+        if (!document.body.classList.contains('dark-theme')) {
+            document.body.classList.add('light-theme');
+        }
+
+        // Hamburger menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const mobileNavLinks = document.querySelector('.mobile-nav-links');
+
+        hamburger.addEventListener('click', () => {
+            mobileNavLinks.classList.toggle('open');
+        });
+    </script>
+</body>
+
+</html>
