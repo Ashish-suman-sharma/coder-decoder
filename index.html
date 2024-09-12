@@ -11,17 +11,6 @@
 
 <body>
     <header>
-        <div class="navbar-wrapper">
-            <div class="navbar">
-                <div class="logo">Logo</div>
-                <ul class="nav-links">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">How to use</a></li>
-                    <li><a href="#">💕 Message me</a></li>
-                    <li><a href="#" id="desktop-login-btn">Login</a></li>
-                </ul>
-            </div>
-        </div>
         <div class="mobile-navbar-wrapper">
             <i class="fas fa-bars hamburger"></i>
             <button class="login-btn" id="mobile-login-btn">Login</button>
@@ -31,6 +20,7 @@
             <a href="#">How to use</a>
             <a href="#">💕 Message me</a>
             <a href="#">Contact</a>
+            <a href="#" id="logout-btn">Logout</a>
         </div>
         <div class="theme-toggle">
             <button id="theme-toggle-btn">🌙</button>
@@ -50,12 +40,11 @@
     </main>
 
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, setPersistence, browserLocalPersistence, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCI8p2DsS04iZbgire7zOx5Y3eMEm6cemI",
             authDomain: "coder-decoder-62d25.firebaseapp.com",
@@ -66,69 +55,125 @@
             measurementId: "G-GB00VBJEYX"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
+        const db = getFirestore(app);
 
-        // Set persistence to local
-        setPersistence(auth, browserLocalPersistence)
-            .then(() => {
-                console.log('Persistence set to local');
-                // Google Sign-In
-                const loginButtons = document.querySelectorAll('#desktop-login-btn, #mobile-login-btn');
-                loginButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        console.log('Login button clicked');
-                        signInWithPopup(auth, provider)
-                            .then((result) => {
-                                // This gives you a Google Access Token. You can use it to access the Google API.
-                                const credential = GoogleAuthProvider.credentialFromResult(result);
-                                const token = credential.accessToken;
-                                // The signed-in user info.
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM fully loaded and parsed');
+            setPersistence(auth, browserLocalPersistence)
+                .then(() => {
+                    console.log('Persistence set to local');
+                    const loginButton = document.getElementById('mobile-login-btn');
+                    if (loginButton) {
+                        console.log('Login button found');
+                        loginButton.addEventListener('click', async () => {
+                            console.log('Login button clicked');
+                            try {
+                                const result = await signInWithPopup(auth, provider);
                                 const user = result.user;
-                                console.log('User signed in: ', user);
+                                const userProfilePic = user.photoURL;
 
-                                // Change header color to green on successful login
-                                document.querySelector('header').style.backgroundColor = 'green';
-                            })
-                            .catch((error) => {
-                                // Handle Errors here.
-                                const errorCode = error.code;
-                                const errorMessage = error.message;
-                                // The email of the user's account used.
-                                const email = error.customData.email;
-                                // The AuthCredential type that was used.
-                                const credential = GoogleAuthProvider.credentialFromError(error);
+                                // Hide login button
+                                loginButton.style.display = 'none';
+
+                                // Create user profile picture element
+                                const userProfilePicElement = document.createElement('img');
+                                userProfilePicElement.src = userProfilePic;
+                                userProfilePicElement.alt = 'User Profile Picture';
+                                userProfilePicElement.style.width = '40px';
+                                userProfilePicElement.style.height = '40px';
+                                userProfilePicElement.style.borderRadius = '50%';
+                                userProfilePicElement.classList.add('user-profile-pic');
+
+                                // Insert user profile picture in place of login button
+                                loginButton.parentNode.insertBefore(userProfilePicElement, loginButton.nextSibling);
+
+                                // Save user data to Firestore
+                                await setDoc(doc(db, "users", user.uid), {
+                                    uid: user.uid,
+                                    displayName: user.displayName,
+                                    email: user.email,
+                                    photoURL: user.photoURL
+                                });
+
+                                // Save user data to local storage
+                                localStorage.setItem('user', JSON.stringify(user));
+
+                                console.log('User signed in: ', user);
+                            } catch (error) {
                                 console.error('Error during sign-in: ', error);
-                            });
-                    });
+                            }
+                        });
+                    } else {
+                        console.error('Login button not found');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error setting persistence: ', error);
                 });
-            })
-            .catch((error) => {
-                console.error('Error setting persistence: ', error);
+
+            // Monitor auth state changes
+            onAuthStateChanged(auth, (user) => {
+                const loginButton = document.getElementById('mobile-login-btn');
+                if (user) {
+                    // User is signed in
+                    if (!document.querySelector('.user-profile-pic')) {
+                        const userProfilePicElement = document.createElement('img');
+                        userProfilePicElement.src = user.photoURL;
+                        userProfilePicElement.alt = 'User Profile Picture';
+                        userProfilePicElement.style.width = '40px';
+                        userProfilePicElement.style.height = '40px';
+                        userProfilePicElement.style.borderRadius = '50%';
+                        userProfilePicElement.classList.add('user-profile-pic');
+
+                        // Hide login button and insert user profile picture
+                        loginButton.style.display = 'none';
+                        loginButton.parentNode.insertBefore(userProfilePicElement, loginButton.nextSibling);
+                    }
+                } else {
+                    // User is signed out
+                    localStorage.removeItem('user');
+                    loginButton.style.display = 'block';
+                    const userProfilePicElements = document.querySelectorAll('.user-profile-pic');
+                    userProfilePicElements.forEach(pic => pic.remove());
+                }
             });
 
-        // Theme toggle
-        document.getElementById('theme-toggle-btn').addEventListener('click', () => {
-            document.body.classList.toggle('dark-theme');
-            document.body.classList.toggle('light-theme');
-            const currentTheme = document.body.classList.contains('dark-theme') ? '🌙' : '🌞';
-            document.getElementById('theme-toggle-btn').textContent = currentTheme;
-        });
+            // Logout functionality
+            document.getElementById('logout-btn').addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    // Clear local storage
+                    localStorage.removeItem('user');
+                    console.log('User signed out');
+                } catch (error) {
+                    console.error('Error during sign-out: ', error);
+                }
+            });
 
-        // Set default theme
-        if (!document.body.classList.contains('dark-theme')) {
-            document.body.classList.add('light-theme');
-        }
+            document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+                document.body.classList.toggle('dark-theme');
+                document.body.classList.toggle('light-theme');
+                const currentTheme = document.body.classList.contains('dark-theme') ? '🌙' : '🌞';
+                document.getElementById('theme-toggle-btn').textContent = currentTheme;
+            });
 
-        // Hamburger menu toggle
-        const hamburger = document.querySelector('.hamburger');
-        const mobileNavLinks = document.querySelector('.mobile-nav-links');
+            if (!document.body.classList.contains('dark-theme')) {
+                document.body.classList.add('light-theme');
+                document.getElementById('theme-toggle-btn').textContent = '🌞';
+            } else {
+                document.getElementById('theme-toggle-btn').textContent = '🌙';
+            }
 
-        hamburger.addEventListener('click', () => {
-            mobileNavLinks.classList.toggle('open');
+            const hamburger = document.querySelector('.hamburger');
+            const mobileNavLinks = document.querySelector('.mobile-nav-links');
+
+            hamburger.addEventListener('click', () => {
+                mobileNavLinks.classList.toggle('open');
+            });
         });
     </script>
 </body>
