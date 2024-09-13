@@ -10,35 +10,43 @@
 </head>
 
 <body>
-    <header>
-        <div class="mobile-navbar-wrapper">
-            <i class="fas fa-bars hamburger"></i>
-            <button class="login-btn" id="mobile-login-btn">Login</button>
-        </div>
-        <div class="mobile-nav-links">
-            <a href="#">🏠Home</a>
-            <a href="#">❓🤔 How</a>
-            <a href="#">💕Text-me</a>
-            <a href="#">📞Call-me</a>
-            <a href="#" id="logout-btn">Logout</a>
-        </div>
-        <div class="theme-toggle">
-            <button id="theme-toggle-btn">🌙</button>
-        </div>
-    </header>
-
-    <main>
-        <section class="content">
-            <div class="input-container">
-                <input type="text" id="inputField" placeholder="Enter text here">
+    <div class="container">
+        <header>
+            <div class="mobile-navbar-wrapper">
+                <i class="fas fa-bars hamburger"></i>
+                <button class="login-btn" id="mobile-login-btn">Login</button>
             </div>
-            <button id="decodeButton">Decode</button>
-            <div class="output-container">
-                <p id="outputField">Output will appear here</p>
+            <div class="mobile-nav-links">
+                <a href="#">🏠Home</a>
+                <a href="#">❓🤔 How</a>
+                <a href="#">💕Text-me</a>
+                <a href="#">📞Call-me</a>
+                <a href="#" id="logout-btn">Logout</a>
             </div>
-        </section>
-    </main>
+            <div class="theme-toggle">
+                <button id="theme-toggle-btn">🌙</button>
+            </div>
+        </header>
+        <div class="main">
+            <h1>Enter secret message</h1>
+            <div class="textarea1" style="position: relative;">
+                <textarea id="inputText" placeholder="Enter your text or encoded message..."></textarea>
+                <button class="pasteButton" id="pasteButton"><i class="fas fa-paste fa-beat"> Paste</i></button>
+                <!-- <button class="pasteButton" id="pasteButton"><i class="fas fa-paste fa-beat">Paste</i></button> -->
+            </div>
 
+            <div class="loading">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <textarea id="outputText" placeholder="Your encoded message will appear here..."></textarea>
+        </div>
+    </div>
+
+    <script src="encrypt.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
@@ -177,6 +185,16 @@
             hamburger.addEventListener('click', () => {
                 mobileNavLinks.classList.toggle('open');
             });
+        });
+
+        document.getElementById('pasteButton').addEventListener('click', async () => {
+            try {
+                // Try to read from the clipboard
+                const text = await navigator.clipboard.readText();
+                document.getElementById('inputText').value = text;
+            } catch (err) {
+                console.error('Failed to read clipboard contents: ', err);
+            }
         });
     </script>
 </body>

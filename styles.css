@@ -6,37 +6,12 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
+h1{
+    font-size: 1.8rem;
+}
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     height: 100vh;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
+    width: 100%;
 }
 
 .slider:before {
@@ -51,42 +26,30 @@ body {
     transition: .4s;
 }
 
-input:checked + .slider {
-    background-color: #2196F3;
+input:checked+.slider {
+    background-color: #f50606;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(26px);
 }
 
 /* Light theme */
 body.light-theme {
-    background-color: #ffffff;
+    background: repeating-linear-gradient(45deg, #92c9b1, #92c9b1 20px, #b3e0d2 20px, #b3e0d2 40px);
     color: #000000;
 }
 
-input,
-button {
+#theme-toggle-btn {
     padding: 10px;
     margin: 5px;
-    border-radius: 5px;
+    border-radius: 50%;
     border: 1px solid #ccc;
-}
-
-button {
-    background-color: #2196F3;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #0b7dda;
 }
 
 /* Dark theme */
 body.dark-theme {
-    background-color: #000000;
+    background: black;
     color: #ffffff;
 }
 
@@ -133,6 +96,7 @@ button:focus {
 .mobile-nav-links {
     display: none;
     flex-direction: column;
+    z-index: 1000;
     align-items: center;
     background-color: #333;
     position: absolute;
@@ -156,14 +120,17 @@ button:focus {
     width: 100%;
     text-align: center;
     transition: background-color 0.3s;
-    border-bottom: 1px solid #575757; /* Add this line */
+    border-bottom: 1px solid #575757;
+    /* Add this line */
 }
 
 .mobile-nav-links a:last-child {
-    border-bottom: none; /* Remove the border from the last link */
+    border-bottom: none;
+    /* Remove the border from the last link */
 }
 
 .theme-toggle {
+    z-index: 1001;
     position: absolute;
     top: 10px;
     left: 45%;
@@ -173,4 +140,90 @@ button:focus {
     width: 40px;
     height: 40px;
     border-radius: 50%;
+}
+
+.main {
+    text-align: center;
+}
+
+textarea {
+    width: 80%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* loading animation */
+
+.loading {
+    margin-left: 50%;
+    transform: translate(-50%);
+    --speed-of-animation: 0.9s;
+    --gap: 6px;
+    --first-color: #4c86f9;
+    --second-color: #49a84c;
+    --third-color: #f6bb02;
+    --fourth-color: #f6bb02;
+    --fifth-color: #2196f3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    gap: 6px;
+    height: 100px;
+}
+
+.loading span {
+    width: 4px;
+    height: 50px;
+    background: var(--first-color);
+    animation: scale var(--speed-of-animation) ease-in-out infinite;
+}
+
+.loading span:nth-child(2) {
+    background: var(--second-color);
+    animation-delay: -0.8s;
+}
+
+.loading span:nth-child(3) {
+    background: var(--third-color);
+    animation-delay: -0.7s;
+}
+
+.loading span:nth-child(4) {
+    background: var(--fourth-color);
+    animation-delay: -0.6s;
+}
+
+.loading span:nth-child(5) {
+    background: var(--fifth-color);
+    animation-delay: -0.5s;
+}
+
+@keyframes scale {
+
+    0%,
+    40%,
+    100% {
+        transform: scaleY(0.05);
+    }
+
+    20% {
+        transform: scaleY(1);
+    }
+}
+
+
+#pasteButton {
+    color: black;
+    background-color: white;
+    position: absolute;
+    top: 85px;
+    right: 9%;
+    padding: 8px 12px;
+    font-size: 11px;
+    border-radius: 5px;
+    cursor: pointer !important;
 }
