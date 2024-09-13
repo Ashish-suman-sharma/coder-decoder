@@ -188,14 +188,18 @@
         });
 
         document.getElementById('pasteButton').addEventListener('click', async () => {
-            try {
-                // Try to read from the clipboard
-                const text = await navigator.clipboard.readText();
-                document.getElementById('inputText').value = text;
-            } catch (err) {
-                console.error('Failed to read clipboard contents: ', err);
-            }
-        });
+        try {
+            // Try to read from the clipboard
+            const text = await navigator.clipboard.readText();
+            const inputText = document.getElementById('inputText');
+            inputText.value = text;
+            
+            // Trigger the input event to ensure encoding and decoding functions are called
+            inputText.dispatchEvent(new Event('input'));
+        } catch (err) {
+            console.error('Failed to read clipboard contents: ', err);
+        }
+    });
     </script>
 </body>
 

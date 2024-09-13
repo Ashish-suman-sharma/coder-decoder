@@ -40,7 +40,7 @@ function generateKey(length) {
 // Function to encode the message
 function encodeMessage() {
     const input = document.getElementById("inputText").value;
-    const key = generateKey(8); // Generate random key (8 characters long)
+    const key = generateKey(16); // Generate random key (16 characters long)
     const { encodeMap } = generateCipher(key); // Generate cipher using the key
     let encoded = "";
 
