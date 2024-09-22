@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Web Application</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="styles-admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
@@ -18,9 +18,7 @@
             </div>
             <div class="mobile-nav-links">
                 <a href="#">🏠Home</a>
-                <a href="#">❓🤔 How</a>
-                <a href="#">💕Text-me</a>
-                <a href="#">📞Call-me</a>
+                <a href="#user-list">User list</a>
                 <a href="#" id="logout-btn">Logout</a>
             </div>
             <div class="theme-toggle">
@@ -28,38 +26,34 @@
             </div>
         </header>
         <div class="main">
-            <h1>Enter secret message</h1>
+            <h1>Admin Encryption</h1>
             <div class="textarea1" style="position: relative;">
-                <textarea id="inputText" placeholder="Enter your text or encoded message..."></textarea>
-                <button class="pasteButton" id="pasteButton"><i class="fas fa-paste fa-beat"> Paste</i></button>
+                <textarea id="adminInputText" placeholder="Enter your text to encode..."></textarea>
+                <div class="textarea2" style="position: relative;">
+                    <textarea id="adminOutputText" placeholder="Your encoded message will appear here..."></textarea>
+                    <button class="copyButton" id="adminCopyButton"><i class="fas fa-copy"> Copy</i></button>
+                </div>
             </div>
-
-            <div class="loading">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <textarea id="outputText" placeholder="Your encoded message will appear here..."></textarea>
+        </div>
+        <div id="user-list">
+            <!-- User list will be populated here -->
         </div>
     </div>
 
-    <script src="encrypt.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, setPersistence, browserLocalPersistence, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCmSiACvlrXo3k4Y45dSHXdq90cErvthXA",
-            authDomain: "project-sell-356e7.firebaseapp.com",
-            projectId: "project-sell-356e7",
-            storageBucket: "project-sell-356e7.appspot.com",
-            messagingSenderId: "653020883276",
-            appId: "1:653020883276:web:09e402da53d6e84b3d87e9",
-            measurementId: "G-ELTY8G42MJ"
+            apiKey: "AIzaSyCI8p2DsS04iZbgire7zOx5Y3eMEm6cemI",
+            authDomain: "coder-decoder-62d25.firebaseapp.com",
+            projectId: "coder-decoder-62d25",
+            storageBucket: "coder-decoder-62d25.appspot.com",
+            messagingSenderId: "84778724309",
+            appId: "1:84778724309:web:ab1d6cb4e502536fd56b5c",
+            measurementId: "G-GB00VBJEYX"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -69,7 +63,6 @@
         const db = getFirestore(app);
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM fully loaded and parsed');
             setPersistence(auth, browserLocalPersistence)
                 .then(() => {
                     console.log('Persistence set to local');
@@ -163,6 +156,17 @@
                     console.error('Error during sign-out: ', error);
                 }
             });
+            document.getElementById('adminCopyButton').addEventListener('click', async () => {
+                try {
+                    const inputText = document.getElementById('adminOutputText').value;
+                    await navigator.clipboard.writeText(inputText);
+                    console.log('Text copied to clipboard');
+                } catch (err) {
+                    console.error('Failed to copy text to clipboard: ', err);
+                }
+            });
+
+            document.getElementById('adminInputText').addEventListener('input', encodeMessage);
 
             document.getElementById('theme-toggle-btn').addEventListener('click', () => {
                 document.body.classList.toggle('dark-theme');
@@ -184,22 +188,41 @@
             hamburger.addEventListener('click', () => {
                 mobileNavLinks.classList.toggle('open');
             });
-        });
 
-        document.getElementById('pasteButton').addEventListener('click', async () => {
-            try {
-                // Try to read from the clipboard
-                const text = await navigator.clipboard.readText();
-                const inputText = document.getElementById('inputText');
-                inputText.value = text;
+            // Fetch and display user data
+            async function fetchAndDisplayUsers(retryCount = 3, delay = 1000) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, "users"));
+                    const userListDiv = document.getElementById('user-list');
+                    userListDiv.innerHTML = ""; // Clear any existing content
 
-                // Trigger the input event to ensure encoding and decoding functions are called
-                inputText.dispatchEvent(new Event('input'));
-            } catch (err) {
-                console.error('Failed to read clipboard contents: ', err);
+                    querySnapshot.forEach((doc) => {
+                        const userData = doc.data();
+                        const userItem = document.createElement('div');
+                        userItem.innerHTML = `
+                            <img src="${userData.photoURL}" alt="User Pic" style="width: 30px; height: 30px; border-radius: 50%;">
+                            ${userData.email}
+                        `;
+                        userListDiv.appendChild(userItem);
+                    });
+                } catch (error) {
+                    console.error('Error fetching user data: ', error);
+                    if (retryCount > 0) {
+                        console.log(`Retrying... (${3 - retryCount + 1})`);
+                        await new Promise(resolve => setTimeout(resolve, delay)); // Wait for the specified delay
+                        await fetchAndDisplayUsers(retryCount - 1, delay * 2); // Exponential backoff
+                    } else {
+                        console.error('Failed to fetch user data after multiple attempts');
+                    }
+                }
             }
+
+            // Call the function to fetch and display users
+            fetchAndDisplayUsers();
         });
     </script>
+    <script src="hambuger-admin.js"></script>
+    <script src="dcrypt.js"></script>
 </body>
 
 </html>

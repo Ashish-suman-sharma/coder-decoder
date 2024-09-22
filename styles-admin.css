@@ -1,0 +1,229 @@
+/* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+h1{
+    font-size: 1.8rem;
+}
+.container {
+    height: 100vh;
+    width: 100%;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #f50606;
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+/* Light theme */
+body.light-theme {
+    background: repeating-linear-gradient(45deg, #92c9b1, #92c9b1 20px, #b3e0d2 20px, #b3e0d2 40px);
+    color: #000000;
+}
+
+#theme-toggle-btn {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}
+
+/* Dark theme */
+body.dark-theme {
+    background: black;
+    color: #ffffff;
+}
+
+input,
+button {
+    background-color: #333333;
+    color: #ffffff;
+    border: 1px solid #444444;
+}
+
+input:focus,
+button:focus {
+    border-color: #555555;
+}
+
+/* Mobile styles */
+.mobile-navbar-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px;
+}
+
+.mobile-navbar-wrapper .hamburger {
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.mobile-navbar-wrapper .login-btn {
+    background-color: #46484a;
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.mobile-navbar-wrapper .login-btn:hover {
+    background-color: #0b7dda;
+}
+
+.mobile-nav-links {
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    align-items: center;
+    background-color: #333;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    transition: max-height 0.3s ease-in-out;
+    overflow: hidden;
+    max-height: 0;
+}
+
+.mobile-nav-links.open {
+    display: flex;
+    max-height: 300px;
+}
+
+.mobile-nav-links a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.3s;
+    border-bottom: 1px solid #575757;
+    /* Add this line */
+}
+
+.mobile-nav-links a:last-child {
+    border-bottom: none;
+    /* Remove the border from the last link */
+}
+
+.theme-toggle {
+    z-index: 1001;
+    position: absolute;
+    top: 10px;
+    left: 45%;
+}
+
+.user-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.main {
+    text-align: center;
+}
+
+textarea {
+    width: 80%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* loading animation */
+
+.loading {
+    margin-left: 50%;
+    transform: translate(-50%);
+    --speed-of-animation: 0.9s;
+    --gap: 6px;
+    --first-color: #4c86f9;
+    --second-color: #49a84c;
+    --third-color: #f6bb02;
+    --fourth-color: #f6bb02;
+    --fifth-color: #2196f3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    gap: 6px;
+    height: 100px;
+}
+
+.loading span {
+    width: 4px;
+    height: 50px;
+    background: var(--first-color);
+    animation: scale var(--speed-of-animation) ease-in-out infinite;
+}
+
+.loading span:nth-child(2) {
+    background: var(--second-color);
+    animation-delay: -0.8s;
+}
+
+.loading span:nth-child(3) {
+    background: var(--third-color);
+    animation-delay: -0.7s;
+}
+
+.loading span:nth-child(4) {
+    background: var(--fourth-color);
+    animation-delay: -0.6s;
+}
+
+.loading span:nth-child(5) {
+    background: var(--fifth-color);
+    animation-delay: -0.5s;
+}
+
+@keyframes scale {
+
+    0%,
+    40%,
+    100% {
+        transform: scaleY(0.05);
+    }
+
+    20% {
+        transform: scaleY(1);
+    }
+}
+
+
+#adminCopyButton {
+    color: black;
+    background-color: white;
+    position: absolute;
+    top: 85px;
+    right: 9%;
+    padding: 8px 12px;
+    font-size: 11px;
+    border-radius: 5px;
+    cursor: pointer !important;
+}
